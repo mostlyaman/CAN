@@ -18,6 +18,6 @@ export const routes = [
     },
     {
         path: '/user', component: User, name: "User",
-        meta: {title: 'User', requiresAuth: true}
+        meta: {title: 'Home', requiresAuth: true}
     }
 ]
