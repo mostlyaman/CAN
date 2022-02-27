@@ -2,6 +2,7 @@
 import UserLogin from './components/UserLogin.vue'
 import About from './components/About.vue'
 import User from './components/User.vue'
+import Post from './components/Post.vue'
 
 export const routes = [
     {
@@ -18,6 +19,10 @@ export const routes = [
     },
     {
         path: '/user', component: User, name: "User",
-        meta: {title: 'Home', requiresAuth: true}
+        meta: {title: 'Home', requiresAuth: false}
+    },
+    {
+        path:'/:space/:child/:post', component:Post, name: "Post",
+        meta: {title: "Post", requiresAuth: false}, params: true
     }
 ]

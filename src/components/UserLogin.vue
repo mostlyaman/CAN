@@ -44,13 +44,16 @@ export default {
                 }).then(response => response.json())
                 .then(data=> {
                     try{
-                        console.log(data)
+                        console.log("Received:" ,data)
                         if(data.status === "OK"){
                             window.user = data.session_id
+                            window.username = data.username
                             this.$router.push({name: 'User'})
                         }else if(data.status === "ERROR"){
                             if(data.ERROR === "USER NOT FOUND"){
                                 this.$waveui.notify({message:'USER NOT FOUND', color : "error"})
+                            }else if(data.ERROR === 'Wrong Password'){
+                                this.$waveui.notify({message: "Wrong Password", color: "error"})
                             }else{
                                 this.$waveui.notify({message:'Server Error', color : "error"})
                             }
