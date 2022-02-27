@@ -2,6 +2,12 @@
 
 Content Aggregation Network is a combination of a Flask Backend API and VueJS Frontend to provide a content management system with a focus on educational purposes.
 
+## Available on Github Pages
+
+I have deployed this project to Github Pages. You can test this project without running locally. Checkout [CAN](https://mostlyaman.github.io/CAN)
+
+This is the same website as the master branch, though Ill add some features to it soon.
+
 ## Quick Start
 
 You must have npm installed on your system. This app was built on Node v16.13.2
