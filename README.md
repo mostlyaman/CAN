@@ -29,6 +29,7 @@ The `npm run dev` script runs the frontend on port 3000 (if available) by defaul
 When you start the development server, you will see the following login page.
 
 ----------------------------------------------------------------------------------------------------------------
+![Login Page Image](./readme/login.png)
 
 Right now, you can browse anonymously by just changing the URL to `/user`
 I was supposed to add a **Browse Anonymously** button to the login page but I forgot that while solving some issues with Flask App.
