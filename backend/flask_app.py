@@ -24,7 +24,7 @@ private = ['mostlyaman$users', 'information_schema', 'mostlyaman$default']
 # Flask Settings
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": 'http://localhost:4173'}})
+CORS(app, resources={r"/api/*": {"origins": 'http://localhost:3000'}})
 
 
 # Storing User Sessions
@@ -186,4 +186,86 @@ def getPost():
             return json.dumps({"status":"OK", "nav":nav, "result":{'author':result[1], 'head':result[2], 'created': str(result[3]), "content" :result[4] }})
         except Exception as e:
             return json.dumps({"status":"ERROR", "ERROR":str(e)})
+
+@app.route('/api/v1/getChild', methods = ['POST'])
+def getChild():
+    db = request.get_json()['db']
+    child = request.get_json()['child']
+    status, db_cursor = getCursor()
+    if(status == "ERROR"):
+        return json.dumps({"status":"ERROR", "ERROR": db_cursor})
+    status, res = parse_cursor_output(db_cursor, "show databases")
+    if(status == "ERROR"):
+        return json.dumps({"status" : "ERROR", "ERROR": res})
+    else:
+        nav= {}
+        result = {}
+        for i in res:
+            if i[0] not in private:
+                db_cursor.execute('use %s' % i[0])
+                name = i[0][11:]
+                path = ""
+                children = {}
+                status, response = parse_cursor_output(db_cursor, "select * from self")
+                if(status == "ERROR"):
+                    return json.dumps({"status":"ERROR", "ERROR": response})
+                for j in response:
+                    if j[0] == "self":
+                        path = j[1]
+                    else:
+                        children[j[0]] = j[1]
+                nav[name] = {"path" : path, "children": children}
+        status, posts = parse_cursor_output(db_cursor, "select * from mostlyaman$" + db+ "."+ child+" order by created DESC LIMIT 50")
+        if(status == "ERROR"):
+            return json.dumps({"status":"ERROR", "ERROR":posts})
+        try:
+            for post in posts:
+                result["/"+db+"/"+child+"/"+str(post[0])] = {"post":post[0], "author": post[1], "head": post[2], "created":str(post[3]), "content": post[4]}
+            return json.dumps({"status":"OK", "nav":nav, "result":result})
+        except Exception as e:
+            return json.dumps({"status":"ERROR", "ERROR":str(e)})
+
+@app.route('/api/v1/getDB', methods = ['POST'])
+def getDB():
+    db = request.get_json()['db']
+    status, db_cursor = getCursor()
+    if(status == "ERROR"):
+        return json.dumps({"status":"ERROR", "ERROR": db_cursor})
+    status, res = parse_cursor_output(db_cursor, "show databases")
+    if(status == "ERROR"):
+        return json.dumps({"status" : "ERROR", "ERROR": res})
+    else:
+        nav= {}
+        result = {}
+        for i in res:
+            if i[0] not in private:
+                db_cursor.execute('use %s' % i[0])
+                name = i[0][11:]
+                path = ""
+                children = {}
+                status, response = parse_cursor_output(db_cursor, "select * from self")
+                if(status == "ERROR"):
+                    return json.dumps({"status":"ERROR", "ERROR": response})
+                for j in response:
+                    if j[0] == "self":
+                        path = j[1]
+                    else:
+                        children[j[0]] = j[1]
+                nav[name] = {"path" : path, "children": children}
+        status, tables = parse_cursor_output(db_cursor, "show tables from mostlyaman$"+db)
+        if(status == "ERROR"):
+            return json.dumps({"status":"ERROR", "ERROR":str(tables)})
+        for table in tables:
+            if(table[0] != "self"):
+                status, posts = parse_cursor_output(db_cursor, "select * from mostlyaman$"+db+"."+table[0]+" order by created DESC LIMIT 10")
+                if(status == "ERROR"):
+                    return json.dumps({"status":"ERROR", "ERROR":str(posts)})
+                for post in posts:
+                    try:
+                        result["/"+db+"/"+table[0]+"/"+str(post[0])] = {"post":post[0], "author": post[1], "head": post[2], "created":str(post[3]), "content": post[4]}
+                    except Exception as e:
+                        return json.dumps({"status": "ERROR", "ERROR":str(e)})
+        return json.dumps({"status":"OK", "nav":nav, "result":result})
+
+
 

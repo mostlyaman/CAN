@@ -25,8 +25,10 @@ export default {
       </div>
     </div>
   </header>
+  <main :key = "$route.path">
 
-  <router-view></router-view>
+    <router-view></router-view>
+  </main>
 </w-app>
 </template>
 
