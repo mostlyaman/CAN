@@ -28,3 +28,4 @@ router.beforeEach((to) => {
 new WaveUI(app, {})
 
 app.use(router).mount('#app')
+//This is a comment.
